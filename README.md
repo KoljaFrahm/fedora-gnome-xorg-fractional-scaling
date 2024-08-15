@@ -38,3 +38,13 @@ $ cp -v /var/lib/mock/results/*.rpm .
 # rpm --force -iv ./mutter-46.4-1.fc40.x86_64.rpm ./gnome-control-center-filesystem-46.3-1.fc40.noarch.rpm ./x86_64/gnome-control-center-46.3-1.fc40.x86_64.rpm
 # echo "exclude=mutter gnome-control-center-filesystem gnome-control-center" >> /etc/dnf/dnf.conf
 ```
+
+## How to update repository
+- Update mutter spec and patches from https://src.fedoraproject.org/rpms/mutter for the right Gnome version
+- Update gnome-control-center spec and patches from https://src.fedoraproject.org/rpms/gnome-control-center for the right Gnome version
+- Download correct tar.xz from https://download.gnome.org/sources/gnome-control-center/ and https://download.gnome.org/sources/mutter/
+- Update scaling patches from
+  - https://salsa.debian.org/gnome-team/mutter/-/tree/ubuntu/latest/debian/patches/ubuntu?ref_type=heads
+  - https://salsa.debian.org/gnome-team/mutter/-/tree/ubuntu/latest/debian/patches/debian?ref_type=heads
+  - https://salsa.debian.org/gnome-team/gnome-control-center/-/tree/ubuntu/latest/debian/patches/ubuntu?ref_type=heads
+- rebuild source rpms with `rpmbuild -bs ~/rpmbuild/SPECS/<mutter/gcc>.spec
