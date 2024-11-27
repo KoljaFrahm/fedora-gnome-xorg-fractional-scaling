@@ -1,13 +1,13 @@
 %define gcr_version 4.1.0
-%define gnome_online_accounts_version 3.49.1
+%define gnome_online_accounts_version 3.51.0
 %define glib2_version 2.76.6
 %define gnome_desktop_version 44.0-7
 %define gsd_version 41.0
 %define gsettings_desktop_schemas_version 46~beta
 %define upower_version 0.99.8
-%define gtk4_version 4.11.2
+%define gtk4_version 4.15.2
 %define gnome_bluetooth_version 42~alpha
-%define libadwaita_version 1.4~alpha
+%define libadwaita_version 1.6~beta
 %define nm_version 1.24.0
 
 %global tarball_version %%(echo %{version} | tr '~' '.')
@@ -16,13 +16,13 @@
 %bcond malcontent %[!0%{?rhel}]
 
 Name:           gnome-control-center
-Version:        46.3
+Version:        47.2
 Release:        %autorelease
 Summary:        Utilities to configure the GNOME desktop
 
 License:        GPL-2.0-or-later AND CC0-1.0
 URL:            https://gitlab.gnome.org/GNOME/gnome-control-center/
-Source0:        https://download.gnome.org/sources/%{name}/46/%{name}-%{tarball_version}.tar.xz
+Source0:        https://download.gnome.org/sources/%{name}/47/%{name}-%{tarball_version}.tar.xz
 
 # Support UI scaled logical monitor mode (Marco Trevisan, Robert Ancell)
 Patch:         display-Support-UI-scaled-logical-monitor-mode.patch
@@ -124,7 +124,12 @@ Recommends: switcheroo-control
 Requires: /usr/bin/tecla
 %if 0%{?fedora} >= 35 || 0%{?rhel} >= 9
 # For the power panel
-Recommends: power-profiles-daemon
+Recommends: ppd-service
+%if 0%{?fedora} && 0%{?fedora} < 41
+Suggests: power-profiles-daemon
+%else
+Suggests: tuned-ppd
+%endif
 %endif
 
 # Renamed in F28

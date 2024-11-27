@@ -1,25 +1,25 @@
 %global glib_version 2.75.1
 %global gtk3_version 3.19.8
 %global gtk4_version 4.0.0
-%global gsettings_desktop_schemas_version 40~alpha
-%global json_glib_version 0.12.0
+%global gsettings_desktop_schemas_version 47~beta
 %global libinput_version 1.19.0
 %global pipewire_version 0.3.33
 %global lcms2_version 2.6
 %global colord_version 1.4.5
-%global libei_version 1.0.0
-%global mutter_api_version 14
+%global libei_version 1.0.901
+%global mutter_api_version 15
 
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
 Name:          mutter
-Version:       46.4
+Version:       47.2
 Release:       %autorelease
 Summary:       Window and compositing manager based on Clutter
 
-License:       GPLv2+
+# Automatically converted from old format: GPLv2+ - review is highly recommended.
+License:       GPL-2.0-or-later
 URL:           http://www.gnome.org
-Source0:       http://download.gnome.org/sources/%{name}/45/%{name}-%{tarball_version}.tar.xz
+Source0:       http://download.gnome.org/sources/%{name}/47/%{name}-%{tarball_version}.tar.xz
 
 # Work-around for OpenJDK's compliance test
 Patch:         0001-window-actor-Special-case-shaped-Java-windows.patch
@@ -30,15 +30,12 @@ Patch:         mutter-42.alpha-disable-tegra.patch
 # https://pagure.io/fedora-workstation/issue/79
 Patch:         0001-place-Always-center-initial-setup-fedora-welcome.patch
 
-# https://bugzilla.redhat.com/show_bug.cgi?id=2239128
-# https://gitlab.gnome.org/GNOME/mutter/-/issues/3068
-# not upstreamed because for upstream we'd really want to find a way
-# to fix *both* problems
-Patch:         0001-Revert-x11-Use-input-region-from-frame-window-for-de.patch
+# https://pagure.io/fedora-workstation/issue/357
+Patch:         0001-gschema-Enable-fractional-scaling-experimental-featu.patch
 
 # Add scaling support using randr under x11 and dynamic triple buffering support
 Patch:	       x11-Add-support-for-fractional-scaling-using-Randr.patch
-Patch:        Support-Dynamic-triple-double-buffering.patch
+Patch:         Support-Dynamic-triple-double-buffering.patch
 
 BuildRequires: pkgconfig(gobject-introspection-1.0) >= 1.41.0
 BuildRequires: pkgconfig(sm)
@@ -72,7 +69,7 @@ BuildRequires: pkgconfig(libsystemd)
 BuildRequires: xorg-x11-server-Xvfb
 BuildRequires: pkgconfig(xkeyboard-config)
 BuildRequires: desktop-file-utils
-BuildRequires: libxcvt
+BuildRequires: cvt
 # Bootstrap requirements
 BuildRequires: gettext-devel git-core
 BuildRequires: pkgconfig(libcanberra)
@@ -92,7 +89,6 @@ BuildRequires: pkgconfig(colord) >= %{colord_version}
 BuildRequires: pkgconfig(libei-1.0) >= %{libei_version}
 BuildRequires: pkgconfig(libeis-1.0) >= %{libei_version}
 
-BuildRequires: pkgconfig(json-glib-1.0) >= %{json_glib_version}
 BuildRequires: pkgconfig(libinput) >= %{libinput_version}
 BuildRequires: pkgconfig(xwayland)
 
@@ -102,11 +98,13 @@ Requires: control-center-filesystem
 Requires: gsettings-desktop-schemas%{?_isa} >= %{gsettings_desktop_schemas_version}
 Requires: gnome-settings-daemon
 Requires: gtk4%{?_isa} >= %{gtk4_version}
-Requires: json-glib%{?_isa} >= %{json_glib_version}
 Requires: libinput%{?_isa} >= %{libinput_version}
 Requires: pipewire%{_isa} >= %{pipewire_version}
 Requires: startup-notification
 Requires: dbus
+
+# Need common
+Requires: %{name}-common = %{version}-%{release}
 
 Recommends: mesa-dri-drivers%{?_isa}
 
@@ -116,6 +114,8 @@ Provides: firstboot(windowmanager) = mutter
 # significantly since then.
 Provides: bundled(cogl) = 1.22.0
 Provides: bundled(clutter) = 1.26.0
+
+Conflicts: mutter < 45~beta.1-2
 
 # Make sure dnf updates gnome-shell together with this package; otherwise we
 # might end up with broken gnome-shell installations due to mutter ABI changes.
@@ -132,6 +132,14 @@ used as the display core of a larger system such as GNOME Shell. For
 this reason, Mutter is very extensible via plugins, which are used both
 to add fancy visual effects and to rework the window management
 behaviors to meet the needs of the environment.
+
+%package common
+Summary: Common files used by %{name} and forks of %{name}
+BuildArch: noarch
+Conflicts: mutter < 45~beta.1-2
+
+%description common
+Common files used by Mutter and soft forks of Mutter
 
 %package devel
 Summary: Development package for %{name}
@@ -171,15 +179,16 @@ the functionality of the installed %{name} package.
 %{_bindir}/mutter
 %{_libdir}/lib*.so.*
 %{_libdir}/mutter-%{mutter_api_version}/
-%{_libexecdir}/mutter-x11-frames
 %{_libexecdir}/mutter-restart-helper
+%{_libexecdir}/mutter-x11-frames
+%{_mandir}/man1/mutter.1*
 
+%files common
 %{_datadir}/GConf/gsettings/mutter-schemas.convert
 %{_datadir}/glib-2.0/schemas/org.gnome.mutter.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gnome.mutter.wayland.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gnome.mutter.x11.gschema.xml
 %{_datadir}/gnome-control-center/keybindings/50-mutter-*.xml
-%{_mandir}/man1/mutter.1*
 %{_udevrulesdir}/61-mutter.rules
 
 %files devel
