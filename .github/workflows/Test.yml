@@ -1,0 +1,57 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Test
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      build_release:
+        description: "Build Release binaries"
+        required: false
+        type: boolean
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    container: fedora:41
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      - name: Install extra build dependencies
+        run: dnf in -y rpm-build
+
+      - name: Install mutter dependencies
+        run: dnf builddep -y rpmbuild/SPECS/mutter.spec
+
+      - name: Install gcc dependencies
+        run: dnf builddep -y rpmbuild/SPECS/gnome-control-center.spec
+
+      - name: create target directory
+        run: mkdir rpms
+
+      - name: build mutter binary
+        run: rpmbuild -D "_sourcedir $PWD/rpmbuild/SOURCES" -D "_rpmdir $PWD/rpms" -D "_srcrpmdir ${PWD}/rpms" --clean -ba rpmbuild/SPECS/mutter.spec
+
+      - name: build gcc binary
+        run: rpmbuild -D "_sourcedir $PWD/rpmbuild/SOURCES" -D "_rpmdir $PWD/rpms" -D "_srcrpmdir ${PWD}/rpms" --clean -ba rpmbuild/SPECS/gnome-control-center.spec
+
+      - name: Archive RPM packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpms-fedora
+          path: |
+            rpms/**/*.rpm
