@@ -40,9 +40,9 @@ jobs:
         id: extract_versions
         run: |
           MUTTER_VERSION=$(sed -n 's/^Version:\s*\(.*\)/\1/p' rpmbuild/SPECS/mutter.spec)
-          GCC_VERSION=$(sed -n 's/^Version:\s*\(.*\)/\1/p' rpmbuild/SPECS/gnome-control-center.spec)          echo "::set-output name=MUTTER_VERSION::$MUTTER_VERSION"
-          echo "::set-output name=MUTTER_VERSION::$MUTTER_VERSION"
-          echo "::set-output name=GCC_VERSION::$GCC_VERSION"
+          GCC_VERSION=$(sed -n 's/^Version:\s*\(.*\)/\1/p' rpmbuild/SPECS/gnome-control-center.spec)
+          echo "MUTTER_VERSION=$MUTTER_VERSION" >> $GITHUB_OUTPUT
+          echo "GCC_VERSION=$GCC_VERSION" >> $GITHUB_OUTPUT
 
       - name: Install extra build dependencies
         run: dnf in -y rpm-build
@@ -81,7 +81,7 @@ jobs:
       - name: Download built RPMs
         uses: actions/download-artifact@v4
         with:
-          name: rpms
+          name: rpms-fedora
           path: rpms
 
       - name: Determine next release tag
