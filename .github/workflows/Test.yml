@@ -28,24 +28,40 @@ jobs:
     container: fedora:41
 
     outputs:
-      mutter_version: ${{ steps.extract_versions.outputs.MUTTER_VERSION }}
-      gcc_version: ${{ steps.extract_versions.outputs.GCC_VERSION }}
+      MUTTER_VERSION: ${{ steps.extract_versions.outputs.MUTTER_VERSION }}
+      GCC_VERSION: ${{ steps.extract_versions.outputs.GCC_VERSION }}
+      RELEASE_TAG: ${{ steps.extract_versions.outputs.RELEASE_TAG }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Install extra build dependencies
+        run: dnf in -y git rpm-build
+
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history, including tags
 
-      - name: Extract versions
+      - name: Extract versions and determine release tag
         id: extract_versions
         run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+
           MUTTER_VERSION=$(sed -n 's/^Version:\s*\(.*\)/\1/p' rpmbuild/SPECS/mutter.spec)
           GCC_VERSION=$(sed -n 's/^Version:\s*\(.*\)/\1/p' rpmbuild/SPECS/gnome-control-center.spec)
+
+          BASE_TAG="${GCC_VERSION}-v"
+          EXISTING_TAG=$(git tag --list "${BASE_TAG}*" | sed 's/.*-v//' | sort -V | tail -n 1)
+
+          if [[ -z "$EXISTING_TAG" ]]; then
+            RELEASE_TAG="${BASE_TAG}1"
+          else
+            RELEASE_TAG="${BASE_TAG}$((EXISTING_TAG + 1))"
+          fi
+
           echo "MUTTER_VERSION=$MUTTER_VERSION" >> $GITHUB_OUTPUT
           echo "GCC_VERSION=$GCC_VERSION" >> $GITHUB_OUTPUT
-
-      - name: Install extra build dependencies
-        run: dnf in -y rpm-build
+          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_OUTPUT
 
       - name: Install mutter dependencies
         run: dnf builddep -y rpmbuild/SPECS/mutter.spec
@@ -73,9 +89,6 @@ jobs:
     if: github.event.inputs.create_release == 'true'
     needs: build
     runs-on: ubuntu-latest
-    env:
-      MUTTER_VERSION: ${{ needs.build.outputs.mutter_version }}
-      GCC_VERSION: ${{ needs.build.outputs.gcc_version }}
 
     steps:
       - name: Download built RPMs
@@ -84,24 +97,13 @@ jobs:
           name: rpms-fedora
           path: rpms
 
-      - name: Determine next release tag
-        run: |
-          BASE_TAG="${GCC_VERSION}-v"
-          EXISTING_TAGS=$(git tag --list "${BASE_TAG}*" | sed 's/.*-v//' | sort -V | tail -n 1)
-          if [[ -z "$EXISTING_TAGS" ]]; then
-            NEW_TAG="${BASE_TAG}1"
-          else
-            NEW_TAG="${BASE_TAG}$((EXISTING_TAGS + 1))"
-          fi
-          echo "RELEASE_TAG=$NEW_TAG" >> $GITHUB_ENV
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: rpms/**/*.rpm
-          tag_name: ${{ env.RELEASE_TAG }}
-          name: "mutter-${{ env.MUTTER_VERSION }} and gnome-control-center-${{ env.GCC_VERSION }}"
-          body: "Automated release for ${{ env.RELEASE_TAG }}"
+          tag_name: ${{ needs.build.outputs.RELEASE_TAG }}
+          name: "mutter-${{ needs.build.outputs.MUTTER_VERSION }}, gnome-control-center-${{ needs.build.outputs.GCC_VERSION }}"
+          body: "Automated release for ${{ needs.build.outputs.RELEASE_TAG }}"
           generate_release_notes: true
           draft: false
           prerelease: false
