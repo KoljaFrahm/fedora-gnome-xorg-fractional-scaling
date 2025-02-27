@@ -11,8 +11,8 @@
 
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
-Name:          mutter
-Version:       47.4
+Name:          mutter-x11-scaling
+Version:       47.5
 Release:       %autorelease
 Summary:       Window and compositing manager based on Clutter
 
