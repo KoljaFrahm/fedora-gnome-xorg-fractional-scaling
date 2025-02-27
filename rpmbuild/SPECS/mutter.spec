@@ -8,18 +8,19 @@
 %global colord_version 1.4.5
 %global libei_version 1.0.901
 %global mutter_api_version 15
+%global mutter_name mutter
 
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
-Name:          mutter
-Version:       47.4
+Name:          mutter-x11-scaling
+Version:       47.5
 Release:       %autorelease
 Summary:       Window and compositing manager based on Clutter
 
 # Automatically converted from old format: GPLv2+ - review is highly recommended.
 License:       GPL-2.0-or-later
 URL:           http://www.gnome.org
-Source0:       http://download.gnome.org/sources/%{name}/47/%{name}-%{tarball_version}.tar.xz
+Source0:       http://download.gnome.org/sources/%{mutter_name}/47/%{mutter_name}-%{tarball_version}.tar.xz
 
 # Work-around for OpenJDK's compliance test
 Patch:         0001-window-actor-Special-case-shaped-Java-windows.patch
@@ -103,6 +104,11 @@ Requires: pipewire%{_isa} >= %{pipewire_version}
 Requires: startup-notification
 Requires: dbus
 
+# Provides mutter libraries
+Provides: %{mutter_name}%{?_isa} = %{version}-%{release}
+Obsoletes: %{mutter_name} < %{version}-%{release}
+Conflicts: %{mutter_name}
+
 # Need common
 Requires: %{name}-common = %{version}-%{release}
 
@@ -134,16 +140,20 @@ to add fancy visual effects and to rework the window management
 behaviors to meet the needs of the environment.
 
 %package common
-Summary: Common files used by %{name} and forks of %{name}
+Summary: Common files used by %{mutter_name} and forks of %{mutter_name}
 BuildArch: noarch
 Conflicts: mutter < 45~beta.1-2
+# Provides mutter-common libraries
+Provides: %{mutter_name}-common = %{version}-%{release}
+Obsoletes: %{mutter_name}-common < %{version}-%{release}
+Conflicts: %{mutter_name}-common
 
 %description common
 Common files used by Mutter and soft forks of Mutter
 
 %package devel
-Summary: Development package for %{name}
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Summary: Development package for %{mutter_name}
+Requires: %{mutter_name}%{?_isa} = %{version}-%{release}
 # for EGL/eglmesaext.h that's included from public cogl-egl-defines.h header
 Requires: mesa-libEGL-devel
 
@@ -152,9 +162,9 @@ Header files and libraries for developing Mutter plugins. Also includes
 utilities for testing Metacity/Mutter themes.
 
 %package  tests
-Summary:  Tests for the %{name} package
-Requires: %{name}-devel%{?_isa} = %{version}-%{release}
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Summary:  Tests for the %{mutter_name} package
+Requires: %{mutter_name}-devel%{?_isa} = %{version}-%{release}
+Requires: %{mutter_name}%{?_isa} = %{version}-%{release}
 Requires: gtk3%{?_isa} >= %{gtk3_version}
 
 %description tests
@@ -162,7 +172,7 @@ The %{name}-tests package contains tests that can be used to verify
 the functionality of the installed %{name} package.
 
 %prep
-%autosetup -S git -n %{name}-%{tarball_version}
+%autosetup -S git -n %{mutter_name}-%{tarball_version}
 
 %build
 %meson -Degl_device=true -Dwayland_eglstream=true
@@ -171,9 +181,9 @@ the functionality of the installed %{name} package.
 %install
 %meson_install
 
-%find_lang %{name}
+%find_lang %{mutter_name}
 
-%files -f %{name}.lang
+%files -f %{mutter_name}.lang
 %license COPYING
 %doc NEWS
 %{_bindir}/mutter
