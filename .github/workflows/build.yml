@@ -25,7 +25,7 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    container: fedora:41
+    container: fedora:42
 
     outputs:
       MUTTER_VERSION: ${{ steps.extract_versions.outputs.MUTTER_VERSION }}

@@ -1,6 +1,6 @@
 # fedora-gnome-xorg-fractional-scaling
 
-Xorg fractional scaling on Fedora Linux 41 and GNOME 47, patches taken from https://github.com/puxplaying/mutter-x11-scaling and https://github.com/puxplaying/gnome-control-center-x11-scaling
+Xorg fractional scaling on Fedora Linux 42 and GNOME 48, patches taken from https://github.com/puxplaying/mutter-x11-scaling and https://github.com/puxplaying/gnome-control-center-x11-scaling
 
 ![After installation screenshot](https://user-images.githubusercontent.com/58503327/202655092-7eff9828-589e-4d81-a061-d97ef68d19b9.png)
 
@@ -58,7 +58,6 @@ $ cp -v /var/lib/mock/results/*.rpm .
 - Download correct tar.xz from https://download.gnome.org/sources/gnome-control-center/ and https://download.gnome.org/sources/mutter/
 - Update scaling patches from
   - https://salsa.debian.org/gnome-team/mutter/-/tree/ubuntu/latest/debian/patches/ubuntu?ref_type=heads
-  - https://salsa.debian.org/gnome-team/mutter/-/tree/ubuntu/latest/debian/patches/debian?ref_type=heads
   - https://salsa.debian.org/gnome-team/gnome-control-center/-/tree/ubuntu/latest/debian/patches/ubuntu?ref_type=heads
 - Clean the folder ~/rpmbuild
 - Go to the SPECS folder of this git and do
