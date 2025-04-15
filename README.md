@@ -6,12 +6,12 @@ Xorg fractional scaling on Fedora Linux 41 and GNOME 47, patches taken from http
 
 ## How to install
 
-- Download `mutter-x11-scaling-{version}.src.rpm` and `gnome-control-center-{version}.src.rpm` from Releases page
+- Download `mutter-x11-scaling-{version}.src.rpm` and `gnome-control-center-x11-scaling-{version}.src.rpm` from Releases page
   (for me the following steps first didn't work because I was in a conda environment, so be sure to use conda deactivate before)
 
 ```
 # dnf in -y rpm-build
-$ rpm -Uvh ./mutter-x11-scaling-{version}.src.rpm ./gnome-control-center-{version}.src.rpm
+$ rpm -Uvh ./mutter-x11-scaling-{version}.src.rpm ./gnome-control-center-x11-scaling-{version}.src.rpm
 $ cd ~/rpmbuild/SPECS
 # dnf builddep mutter.spec
 $ rpmbuild --clean -ba mutter.spec
@@ -19,8 +19,7 @@ $ rpmbuild --clean -ba mutter.spec
 $ rpmbuild --clean -ba gnome-control-center.spec
 $ cd ~/rpmbuild/RPMS/
 # dnf install ./noarch/mutter-x11-scaling-common-{version}.rpm ./x86_64/mutter-x11-scaling-{version}.rpm --allowerasing
-# rpm --force -iv ./noarch/gnome-control-center-filesystem-{version}.noarch.rpm ./x86_64/gnome-control-center-{version}.x86_64.rpm
-# echo "exclude=gnome-control-center-filesystem gnome-control-center" >> /etc/dnf/dnf.conf
+# dnf install ./noarch/gnome-control-center-x11-scaling-filesystem-{version}.rpm ./x86_64/gnome-control-center-x11-scaling-{version}.rpm --allowerasing
 ```
 
 ## or installing with `mock` (not tested with Fedora 40/41)
@@ -38,18 +37,18 @@ $ cp -v /var/lib/mock/results/*.rpm .
 
 ## Using prebuilt binaries
 
-- Download `mutter-x11-scaling-common-{version}.noarch.rpm`, `mutter-x11-scaling-{version}.x86_64.rpm`, `gnome-control-center-filesystem-{version}.noarch.rpm` and `gnome-control-center-{version}.x86_64.rpm` from Releases page
+- Download `mutter-x11-scaling-common-{version}.noarch.rpm`, `mutter-x11-scaling-{version}.x86_64.rpm`, `gnome-control-center-x11-scaling-filesystem-{version}.noarch.rpm` and `gnome-control-center-{version}.x86_64.rpm` from Releases page
 
 ```
-# dnf install ./noarch/mutter-x11-scaling-common-{version}.rpm ./x86_64/mutter-x11-scaling-{version}.rpm --allowerasing
-# rpm --force -iv ./noarch/gnome-control-center-filesystem-{version}.noarch.rpm ./x86_64/gnome-control-center-{version}.x86_64.rpm
-# echo "exclude=gnome-control-center-filesystem gnome-control-center" >> /etc/dnf/dnf.conf
+# dnf install ./mutter-x11-scaling-common-{version}.rpm ./mutter-x11-scaling-{version}.rpm --allowerasing
+# dnf install ./gnome-control-center-x11-scaling-filesystem-{version}.rpm ./gnome-control-center-x11-scaling-{version}.rpm --allowerasing
 ```
 
-## How to reinstall the original mutter
+## How to reinstall the original mutter and gnome-control-center
 
 ```
 # dnf install mutter mutter-common --allowerasing
+# dnf install gnome-control-center gnome-control-center-filesystem --allowerasing
 ```
 
 ## How to update repository

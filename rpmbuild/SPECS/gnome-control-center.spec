@@ -9,20 +9,21 @@
 %define gnome_bluetooth_version 42~alpha
 %define libadwaita_version 1.6~beta
 %define nm_version 1.24.0
+%global gcc_name gnome-control-center
 
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
 # Disable parental control for RHEL builds
 %bcond malcontent %[!0%{?rhel}]
 
-Name:           gnome-control-center
-Version:        47.3
+Name:           gnome-control-center-x11-scaling
+Version:        47.5
 Release:        %autorelease
 Summary:        Utilities to configure the GNOME desktop
 
 License:        GPL-2.0-or-later AND CC0-1.0
 URL:            https://gitlab.gnome.org/GNOME/gnome-control-center/
-Source0:        https://download.gnome.org/sources/%{name}/47/%{name}-%{tarball_version}.tar.xz
+Source0:        https://download.gnome.org/sources/%{gcc_name}/47/%{gcc_name}-%{tarball_version}.tar.xz
 
 # Support UI scaled logical monitor mode (Marco Trevisan, Robert Ancell)
 Patch:         display-Support-UI-scaled-logical-monitor-mode.patch
@@ -135,7 +136,10 @@ Suggests: tuned-ppd
 # Renamed in F28
 Provides: control-center = 1:%{version}-%{release}
 Provides: control-center%{?_isa} = 1:%{version}-%{release}
+Provides: %{gcc_name}%{?_isa} = 1:%{version}-%{release}
+Provides: %{gcc_name} = 1:%{version}-%{release}
 Obsoletes: control-center < 1:%{version}-%{release}
+Conflicts: control-center
 
 %description
 This package contains configuration utilities for the GNOME desktop, which
@@ -151,6 +155,7 @@ BuildArch: noarch
 # Renamed in F28
 Provides: control-center-filesystem = 1:%{version}-%{release}
 Obsoletes: control-center-filesystem < 1:%{version}-%{release}
+Conflicts: control-center-filesystem
 
 %description filesystem
 The GNOME control-center provides a number of extension points
@@ -159,7 +164,7 @@ can install configuration files that are picked up by the control-center
 utilities.
 
 %prep
-%autosetup -p1 -n %{name}-%{tarball_version}
+%autosetup -p1 -n %{gcc_name}-%{tarball_version}
 
 %build
 %meson \
