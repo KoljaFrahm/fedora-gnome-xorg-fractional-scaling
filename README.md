@@ -1,5 +1,7 @@
 # fedora-gnome-xorg-fractional-scaling
 
+I'm archiving this repo. because  there is no x11 anymore from Fedora 43 on, so we can't use it anymore.
+
 Xorg fractional scaling on Fedora Linux 42 and GNOME 48, patches taken from https://github.com/puxplaying/mutter-x11-scaling and https://github.com/puxplaying/gnome-control-center-x11-scaling
 
 ![After installation screenshot](https://user-images.githubusercontent.com/58503327/202655092-7eff9828-589e-4d81-a061-d97ef68d19b9.png)
